@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<link href="https://fonts.googleapis.com/css?family=Jua&display=swap" rel="stylesheet">
+	<title>특명! 짱구 피망을 피해랏!</title>
+
+	<style type="text/css">
+        html{cursor: url(face1.png), auto}
+		body{font-family: 'Jua', sans-serif;}
+		h1, p{text-align: center;}
+        h1{color: #ed147c;}
+        h2{text-align: center; font-size: 35px;}
+        h3{text-align: center; font-size: 100px;}
+		canvas { background: #f4aed3; display: block; margin: auto;}
+        #back{background: url(./back.jpg); background-size: cover; background-attachment: fixed;}
+        .center{text-align: center;}
+        .info{ height: 70px; width:200px; margin: 0; position: absolute; left: 365px; top: 70px;}
+        #beforef {height: 600px; width: 800px; position: absolute; top: 16.5%; left: 22.2%; display: block; color: white; background-color: #ed147c;}
+        #befores {height: 600px; width: 800px; position: absolute; top: 16.5%; left: 22.2%; display: none; color: white; background-color: #ed147c;}
+        #starttext{text-align: center; margin-top: 270px;}
+        #count{ text-align: center; margin-top: 240px; display: none;}
+        .ex{height: 70px; width: 550px; margin: 0; position: absolute; left: 580px; top: 58px; }
+        #button{ border: none; color: white; background-color: #ed147c; padding: 7px; font-family: 'Jua', sans-serif; font-size: 20px;  margin-bottom: 10px; cursor: url(face1.png), auto; height: 37px; width: 150px; position:}
+        #zz1{height: 250px; width: auto; position: absolute; top: 300px; left: 30px;}
+        #zz2{height: 250px; width: auto; position: absolute; top: 300px; right: 30px;}
+	</style>
+</head>
+
+
+
+<body id="back">
+	
+	<h1>🤢 짱구는 피망을 싫어햇! 🤢</h1>
+    <div class="info">
+        <button id="button">start</button></div>
+        <div class="ex"><p>😎 방향키 (좌,우,위,아래)로 움직여 주세요! 목숨은 3개입니다! 😎</p></div>
+        <audio loop id="song">
+        <source src="song.mp3" type="audio/mpeg"></audio>
+
+         <div id="beforef">
+                    <h2 id="starttext">start 버튼을 눌러주세요</h2>
+                </div>
+         <div id="befores">
+         	<h3 id="count">3</h3>
+         </div>
+
+    
+    <br><br>
+<script src="./phaser.min.js"></script>
+
+    <div>
+        <img id="zz1" 
+        src="zzang1.gif">
+    </div>
+    <div>
+        <img id="zz2" 
+        src="zzang1.gif">
+    </div>
+	
+
+
+	<script type="text/javascript">
+var game;var start = false;
+button.onclick = function(){
+    if(!start){
+
+
+        
+    	beforef.style.display = "none";
+    	befores.style.display = "block";
+    	count.style.display = "block";
+
+    	var counter = 3;
+    	
+
+    	setInterval ( function(){
+    		counter--;
+
+    		if ( counter >= 0) {
+    			id = document.getElementById("count");
+    			id.innerHTML = counter;
+    		}else{
+    			id.innerHTML = start;
+    		}
+    	}, 1000);
+
+
+
+  
+        
+        song.play();
+
+        setTimeout(function(){ 
+        	game = new Phaser.Game(800, 600, Phaser.CANVAS, null, { preload: preload, create: create, update: update});
+        	start = true;
+        	befores.style.opacity = 0;
+        }, 3000);
+
+  		}else{
+        window.location.reload();
+
+    }
+    
+	
+} 
+
+        
+
+var ddongAlive;
+var ddongArray = [];
+var sky;
+var player;
+var ddongHitsSky;
+var ddongHitsPlayer;
+var playerLife = 3;
+var txtGameover;
+var score = 0;
+var txtScore;
+var eventScore;
+var choco1;
+var choco2;
+var choco3;
+
+// 게임 상태
+var gameState = '';
+
+
+ 
+function preload() {
+    // 게임에 필요한 데이터 로드
+    game.load.image("box", "./box.png");    // 상자 이미지를 'box' 이름으로 생성
+    game.load.spritesheet("player", "./zzangu5.png", 48, 48);  // 플레이어를 기본32x40 크기로 설정. 'player' 이름으로 생성
+    game.load.image("ddong", "./pp.png", 25, 25);
+    game.load.image("choco1", "./face.png");
+    game.load.image("choco2" , "./face.png");
+    game.load.image("choco3" , "./face.png");
+
+
+}
+ 
+function create() {
+    // 게임 처음 실행시 수행되는 함수
+    game.physics.startSystem(Phaser.Physics.ARCADE); // 게임 속성 설정(아케이드)
+ 
+    game.stage.backgroundColor = "#f7dfee";         // 게임 배경색 설청
+    game.create.texture('sky', ['B'], 800, 80, 0);  // 'E' 코드색상 800x80 크기의 블럭을 'sky' 이름으로 생성
+    // game.add.sprite(0, 0, 'sky');                   // sky를 x좌표 0, y좌표 0 위치에 추가
+    sky = game.add.group();
+    sky.enableBody = true;
+    sky.create(0, 0, "sky");
+
+    box = game.add.group();      // box 그룹 생성
+	box.enableBody = true;       // box에 충돌속성을 설정합니다.
+	for (var i = 0; i < 20; i++) {
+    var rowBox = box.create(i*40, 80, "box");
+    rowBox.body.immovable = true;   // box가 움직이지 못하도록 설정합니다.
+    rowBox = box.create(i*40, 600-40, "box");
+    rowBox.body.immovable = true;   // box가 움직이지 못하도록 설정합니다.
+}
+ 
+	for (var j = 3; j < 14; j++) {
+    var colBox = box.create(0, j*40, "box");
+    colBox.body.immovable = true;
+    colBox = box.create(800-40, j*40, "box");
+    colBox.body.immovable = true;
+}
+
+
+	player = game.add.sprite(400, 300, "player");
+    game.physics.arcade.enable(player);
+    player.animations.add("left", [0], 10, true);    // 0,1,번째 프레임을 0.1초 단위로 반복하는 애니메이션 생성
+    player.animations.add("right", [4], 10, true);   // 3,4,번째 프레임을 0.1초 단위로 반복하는 애니메이션 생성  
+ 
+    ddong = game.add.group();
+    ddong.enableBody = true;
+    ddong.physicsBodyType = Phaser.Physics.ARCADE;
+    ddong.createMultiple(25, "ddong");
+    ddong.setAll("outOfBoundsKill", true);
+    ddong.setAll("checkWorldBounds", true);
+ 
+    keyMove = game.input.keyboard.createCursorKeys();
+    keyMove = game.input.keyboard.createCursorKeys();     // 키보드 커서키 입력 이벤트 생성
+
+
+    choco1 = game.add.sprite(710, 10, "choco1");
+    game.physics.arcade.enable(choco1);
+    choco2 = game.add.sprite(620, 10, "choco2");
+    game.physics.arcade.enable(choco2);
+    choco3 = game.add.sprite(530, 10, "choco3");
+    game.physics.arcade.enable(choco3);
+
+
+
+    txtGameover = game.add.text(game.world.centerX, game.world.centerY, "Game Over", { font: "70px Arial", fill: "#000000" });
+    txtGameover.anchor.setTo(0.5, 0.1);
+    txtGameover.visible = false;
+
+    txtScore = game.add.text(20, 10, "Score : 0", { font: "50px Arial", fill: "#FFFFFF" });
+    eventScore = game.time.events.loop(Phaser.Timer.HALF, function () {score++; txtScore.setText("Score : " + score);}, this);
+
+    var timeoutID
+
+
+
+
+
+}
+
+ 
+function update() {
+    // 프레임워크에서 주기적으로 수행하는 함수
+    game.physics.arcade.collide(player, box);   // player와 box가 충돌할수 있도록 설정
+    game.physics.arcade.overlap(sky, ddong, ddongHitsSky, null, this);
+    game.physics.arcade.overlap(player, ddong, ddongHitsPlayer, null, this);
+
+    player.body.velocity.setTo(0, 0); // 관성을 0으로 설정
+
+
+    if (playerLife < 3) {
+        choco1.visible = false;
+        
+    }
+
+    if (playerLife < 2) {
+        choco2.visible = false;
+        
+    }
+
+    if (playerLife < 1) {
+        txtGameover.visible = true;
+        choco3.visible = false;
+         game.time.events.remove(eventScore);
+        return;
+    }
+ 
+    if (keyMove.left.isDown && keyMove.up.isDown) {
+
+ 
+    }if (keyMove.left.isDown && keyMove.up.isDown) {
+        player.body.velocity.x = -220;
+        player.body.velocity.y = -220;
+        player.animations.play("left");
+        
+    } else if (keyMove.left.isDown && keyMove.down.isDown) {
+        player.body.velocity.x = -220;
+        player.body.velocity.y = +220;
+        player.animations.play("left");
+        
+    } else if (keyMove.right.isDown && keyMove.up.isDown) {
+        player.body.velocity.x = +220;
+        player.body.velocity.y = -220;
+        player.animations.play("right");
+        
+    } else if (keyMove.right.isDown && keyMove.down.isDown) {
+        player.body.velocity.x = +220;
+        player.body.velocity.y = +220;
+        player.animations.play("right");
+        
+    } else if (keyMove.left.isDown) {
+        player.body.velocity.x = -220;    // player x좌표 위치를 -150 속도로 이동
+        player.animations.play("left");   // player에게 'left' 애니메이션 적용
+        
+    } else if (keyMove.right.isDown) {
+        player.body.velocity.x = +220;
+        player.animations.play("right");
+        
+    } else if (keyMove.up.isDown) {
+        player.body.velocity.y = -220;
+        player.animations.play("left");
+        
+    } else if (keyMove.down.isDown) {
+        player.body.velocity.y = +220;
+        player.animations.play("right");
+        
+    } else {
+        player.animations.stop();    // player에게 적용중인 애니메이션을 멈춘다.
+        player.frame = 2;            // player의 frame을 3번째 프레임으로 설정한다.
+    }
+
+    ddongAlive = ddong.getFirstExists(false);
+    ddongArray.length=0;
+    // box 개수만큼 똥을 세팅한다.
+    box.forEachAlive(function(ddongAlive){
+        ddongArray.push(ddongAlive);
+    });
+    // box 중 랜덤으로 하나를 골라서 똥을 생성한다.
+    if ( ddongAlive && ddongArray.length > 0) {
+        var random = game.rnd.integerInRange(0, ddongArray.length-1);
+        var ddongBox = ddongArray[random];
+        ddongAlive.reset(ddongBox.body.x, ddongBox.body.y);
+        game.physics.arcade.moveToObject(ddongAlive, player, 130);
+    }
+
+}
+
+function ddongHitsPlayer(playerPoint, ddongs) {
+    ddongs.kill();
+    playerLife--;
+    
+
+
+}
+
+
+</script>
+
+
+
+</body>
+</html>
